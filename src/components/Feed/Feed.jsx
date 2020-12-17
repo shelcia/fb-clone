@@ -116,11 +116,19 @@ const Feed = () => {
     [LINK, allPost, commentText, dispatch]
   );
 
+  let likesData = [];
   const addLikes = useCallback(
     (id, value) => {
-      const response = {
+      let response = {
         likes: value + 1,
       };
+      likesData = JSON.parse(localStorage.getItem('likeIDS')) || [];
+            
+      if (JSON.parse(localStorage.getItem('likeIDS')).includes(id)) {
+        response = {
+          likes: value,
+        };
+      }
       axios
         .put(`${LINK}likes/${id}`, response)
         .then((res) => {
@@ -136,6 +144,10 @@ const Feed = () => {
           });
           dispatch(AddLike(newAllPost));
           console.log(res);
+          if (!JSON.parse(localStorage.getItem('likeIDS')).includes(id)) {
+            likesData.push(id);            
+          }
+          localStorage.setItem('likeIDS', JSON.stringify(likesData));
         })
         .catch((error) => {
           console.log(error);
@@ -145,12 +157,22 @@ const Feed = () => {
     [LINK, allPost, dispatch]
   );
 
+  let dislikesData = [];
   const disLikes = useCallback(
     (id, value) => {
       console.log("clicked");
       const response = {
         dislikes: value + 1,
       };
+
+      dislikesData = JSON.parse(localStorage.getItem('dislikeIDS')) || [];
+            
+      if (JSON.parse(localStorage.getItem('dislikeIDS')).includes(id)) {
+        response = {
+          likes: value,
+        };
+      }
+
       axios
         .put(`${LINK}dislikes/${id}`, response)
         .then((res) => {
@@ -166,6 +188,10 @@ const Feed = () => {
           });
           dispatch(AddDislike(newAllPost));
           console.log(res);
+          if (!JSON.parse(localStorage.getItem('dislikeIDS')).includes(id)) {
+            dislikesData.push(id);            
+          }
+          localStorage.setItem('dislikeIDS', JSON.stringify(dislikesData));
         })
         .catch((error) => {
           console.log(error);
